@@ -8,11 +8,12 @@ const sendTokenResponse = (user, statusCode, res) => {
     { expiresIn: '30d' }
   );
 
+  const isProduction = process.env.NODE_ENV === 'production';
   const options = {
     expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
   };
 
   res
@@ -78,9 +79,12 @@ export const login = async (req, res, next) => {
 };
 
 export const logout = async (req, res) => {
+  const isProduction = process.env.NODE_ENV === 'production';
   res.cookie('token', 'none', {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
   });
   res.status(200).json({ success: true, message: 'Logged out successfully.' });
 };

@@ -7,7 +7,14 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
+// Request interceptor: attach token from localStorage if available (dual-cookie & token auth)
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('studyforge_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 // Response error interceptor
 api.interceptors.response.use(
   response => response,
