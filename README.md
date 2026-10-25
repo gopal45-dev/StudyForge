@@ -12,6 +12,13 @@ Turn raw course PDFs and lecture notes into a structured, measurable, and closed
 
 ---
 
+## 🌐 Live Deployment
+- **Live Application (Vercel)**: [https://study-forge-jet.vercel.app](https://study-forge-jet.vercel.app)
+- **Backend REST API (Render)**: [https://studyforge-5w6a.onrender.com](https://studyforge-5w6a.onrender.com)
+- **API Health Check**: [https://studyforge-5w6a.onrender.com/api/health](https://studyforge-5w6a.onrender.com/api/health)
+
+---
+
 ## 📌 Problem Statement
 College students frequently gather hundreds of lecture slides and course PDFs before midterms and finals, but spend disproportionate time manually converting dense material into practice tests, flashcards, and revision schedules. Most generic AI tools serve merely as prompt wrappers that output disconnected text without tracking learning progress over time. Students lack a **persistent, closed-loop workspace** that measures what they have actually mastered and directs their revision toward verifiable knowledge gaps.
 
