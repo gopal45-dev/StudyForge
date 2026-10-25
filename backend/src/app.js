@@ -58,6 +58,14 @@ const apiLimiter = rateLimit({
 app.use('/api/', apiLimiter);
 
 // Health Check
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    message: 'StudyForge Backend API is running',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'online',
