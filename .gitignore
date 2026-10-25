@@ -1,9 +1,25 @@
+# Dependencies
 node_modules/
+
+# Environment variables
 .env
-.env.local
-dist/
-coverage/
+.env.*
+*.env
+backend/.env
+frontend/.env
+
+# User requested exclusions
+docs/
+*.pdf
+
+# Uploaded documents
 uploads/*
 !uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Build artifacts
+dist/
+coverage/
 .DS_Store
 *.log

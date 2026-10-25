@@ -24,9 +24,9 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <Link to="/" className="flex items-center space-x-2.5">
-          <div className="bg-brand-600 text-white p-2 rounded-xl shadow-sm">
-            <BrainCircuit className="w-5 h-5" />
+        <Link to="/" className="flex items-center space-x-2.5 group">
+          <div className="w-9 h-9 rounded-xl overflow-hidden shadow-sm flex items-center justify-center transition-transform group-hover:scale-105">
+            <img src="/favicon.svg" alt="StudyForge Logo" className="w-full h-full object-contain" />
           </div>
           <span className="font-bold text-xl tracking-tight text-slate-900">
             Study<span className="text-brand-600">Forge</span>

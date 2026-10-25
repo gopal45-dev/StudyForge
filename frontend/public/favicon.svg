@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="forgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+    <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#ef4444" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded squircle -->
+  <rect width="64" height="64" rx="16" fill="url(#forgeGrad)" />
+  
+  <!-- Outer Glow Ring -->
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#ffffff" stroke-opacity="0.15" stroke-width="2" />
+
+  <!-- Open Book Base (Study) -->
+  <path d="M16 42C21 38 27 38 32 40C37 38 43 38 48 42V25C43 21 37 21 32 23C27 21 21 21 16 25V42Z" fill="#ffffff" fill-opacity="0.95" />
+  <path d="M32 23V40" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Rising Forge Spark / Flame (Forge) -->
+  <path d="M32 10C32 10 27 16 27 20C27 22.76 29.24 25 32 25C34.76 25 37 22.76 37 20C37 16 32 10 32 10Z" fill="url(#sparkGrad)" />
+  <circle cx="32" cy="19" r="2" fill="#ffffff" />
+
+  <!-- Little energy spark stars -->
+  <polygon points="43,14 44.5,17 47.5,18.5 44.5,20 43,23 41.5,20 38.5,18.5 41.5,17" fill="#fbbf24" />
+  <polygon points="21,15 22,17 24,18 22,19 21,21 20,19 18,18 20,17" fill="#fde047" opacity="0.9" />
+</svg>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import {
   Brain,
@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  Trash2,
 } from 'lucide-react';
 
 export default function ResourceViewerPage() {
@@ -60,6 +61,18 @@ export default function ResourceViewerPage() {
     }
   };
 
+  const navigate = useNavigate();
+
+  const handleDeleteResource = async () => {
+    if (!window.confirm(`Delete this ${resource.resourceType === 'SUMMARY' ? 'summary' : 'flashcard deck'}?`)) return;
+    try {
+      await api.delete(`/resources/${resourceId}`);
+      navigate(`/subjects/${resource.subjectId?._id || ''}`);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   if (loading || !resource) {
     return <div className="p-12 text-center text-slate-400">Loading study resource...</div>;
   }
@@ -77,9 +90,19 @@ export default function ResourceViewerPage() {
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Subject</span>
         </Link>
-        <span className="text-xs font-bold px-2.5 py-1 bg-brand-50 text-brand-700 rounded-full border border-brand-200 uppercase tracking-wider">
-          {resource.resourceType}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-bold px-2.5 py-1 bg-brand-50 text-brand-700 rounded-full border border-brand-200 uppercase tracking-wider">
+            {resource.resourceType}
+          </span>
+          <button
+            onClick={handleDeleteResource}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors"
+            title="Delete this study resource"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Delete</span>
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">

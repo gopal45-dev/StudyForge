@@ -19,6 +19,20 @@ export const generateSummary = async (req, res, next) => {
       });
     }
 
+    // Check if summary already exists for this document
+    const existing = await StudyResource.findOne({
+      userId: req.user._id,
+      documentId: doc._id,
+      resourceType: 'SUMMARY',
+    });
+    if (existing) {
+      return res.status(200).json({
+        success: true,
+        message: 'Summary already exists for this document.',
+        data: existing,
+      });
+    }
+
     const summaryData = await AIService.generateSummary(doc.extractedText, doc.originalName);
 
     const resource = await StudyResource.create({
@@ -49,6 +63,20 @@ export const generateFlashcards = async (req, res, next) => {
       return res.status(400).json({
         success: false,
         message: 'Document text is not yet processed or extraction failed.',
+      });
+    }
+
+    // Check if flashcards already exist for this document
+    const existing = await StudyResource.findOne({
+      userId: req.user._id,
+      documentId: doc._id,
+      resourceType: 'FLASHCARDS',
+    });
+    if (existing) {
+      return res.status(200).json({
+        success: true,
+        message: 'Flashcards already exist for this document.',
+        data: existing,
       });
     }
 

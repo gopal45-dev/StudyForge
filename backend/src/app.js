@@ -48,10 +48,11 @@ app.use(
   })
 );
 
-// Rate limiter for API routes
+// Rate limiter for API routes (relaxed in development)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,
+  max: process.env.NODE_ENV === 'production' ? 200 : 5000,
+  skip: () => process.env.NODE_ENV === 'development',
   message: { success: false, message: 'Too many requests, please try again later.' },
 });
 app.use('/api/', apiLimiter);

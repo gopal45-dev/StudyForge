@@ -5,6 +5,7 @@ import {
   submitAttempt,
   getAttempts,
   getAttempt,
+  deleteQuiz,
 } from '../controllers/quizController.js';
 import { protect } from '../middleware/auth.js';
 
@@ -13,7 +14,9 @@ const router = express.Router();
 router.use(protect);
 
 router.get('/', getQuizzes);
-router.get('/:quizId', getQuiz);
+router.route('/:quizId')
+  .get(getQuiz)
+  .delete(deleteQuiz);
 router.post('/:quizId/attempts', submitAttempt);
 
 // Attempts history routes

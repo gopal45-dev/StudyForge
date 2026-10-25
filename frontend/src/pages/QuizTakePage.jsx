@@ -8,6 +8,7 @@ import {
   AlertCircle,
   ArrowRight,
   RotateCcw,
+  Trash2,
 } from 'lucide-react';
 
 export default function QuizTakePage() {
@@ -80,6 +81,16 @@ export default function QuizTakePage() {
     }
   };
 
+  const handleDeleteQuiz = async () => {
+    if (!window.confirm('Are you sure you want to delete this quiz?')) return;
+    try {
+      await api.delete(`/quizzes/${quizId}`);
+      navigate(`/subjects/${quiz.subjectId?._id || ''}`);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   if (loading || !quiz) {
     return <div className="p-12 text-center text-slate-400">Loading quiz questions...</div>;
   }
@@ -101,7 +112,7 @@ export default function QuizTakePage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-slate-100 rounded-xl text-slate-700">
             <Clock className="w-4 h-4 text-brand-600" />
             <span>{formatTimer(timerSeconds)}</span>
@@ -116,6 +127,14 @@ export default function QuizTakePage() {
               {submitting ? 'Scoring...' : 'Submit Assessment'}
             </button>
           )}
+
+          <button
+            onClick={handleDeleteQuiz}
+            className="p-2 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+            title="Delete this quiz"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

@@ -2,6 +2,8 @@ import path from 'path';
 import fs from 'fs';
 import Document from '../models/Document.js';
 import Subject from '../models/Subject.js';
+import StudyResource from '../models/StudyResource.js';
+import Quiz from '../models/Quiz.js';
 import { PDFService } from '../services/pdfService.js';
 
 export const getDocumentsBySubject = async (req, res, next) => {
@@ -31,6 +33,25 @@ export const uploadDocument = async (req, res, next) => {
       // Remove uploaded file if subject invalid
       fs.unlinkSync(req.file.path);
       return res.status(404).json({ success: false, message: 'Subject not found.' });
+    }
+
+    // If a document with the same name already exists in this subject, cleanly replace it
+    const existingDoc = await Document.findOne({
+      userId: req.user._id,
+      subjectId: subject._id,
+      originalName: req.file.originalname,
+    });
+
+    if (existingDoc) {
+      // Remove old file from disk
+      const oldPath = path.resolve('uploads', existingDoc.storageKey);
+      if (fs.existsSync(oldPath)) {
+        try { fs.unlinkSync(oldPath); } catch (_) {}
+      }
+      // Clean up old associated study resources and quizzes to prevent duplicates
+      await StudyResource.deleteMany({ documentId: existingDoc._id });
+      await Quiz.deleteMany({ documentId: existingDoc._id });
+      await Document.deleteOne({ _id: existingDoc._id });
     }
 
     // Create Document record in UPLOADED/PROCESSING state
@@ -129,7 +150,11 @@ export const deleteDocument = async (req, res, next) => {
       fs.unlinkSync(filePath);
     }
 
-    res.status(200).json({ success: true, message: 'Document removed.' });
+    // Cascade delete associated study resources and quizzes
+    await StudyResource.deleteMany({ documentId: doc._id });
+    await Quiz.deleteMany({ documentId: doc._id });
+
+    res.status(200).json({ success: true, message: 'Document and associated resources removed.' });
   } catch (err) {
     next(err);
   }

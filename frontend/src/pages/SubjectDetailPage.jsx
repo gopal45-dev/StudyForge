@@ -87,9 +87,29 @@ export default function SubjectDetailPage() {
   };
 
   const handleDeleteDoc = async (docId) => {
-    if (!window.confirm('Delete this uploaded document?')) return;
+    if (!window.confirm('Delete this uploaded document? Associated quizzes and flashcards will also be removed.')) return;
     try {
       await api.delete(`/documents/${docId}`);
+      fetchData();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleDeleteQuiz = async (quizId) => {
+    if (!window.confirm('Delete this practice quiz?')) return;
+    try {
+      await api.delete(`/quizzes/${quizId}`);
+      fetchData();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleDeleteResource = async (resourceId) => {
+    if (!window.confirm('Delete this study resource?')) return;
+    try {
+      await api.delete(`/resources/${resourceId}`);
       fetchData();
     } catch (err) {
       alert(err.message);
@@ -185,36 +205,78 @@ export default function SubjectDetailPage() {
                     </div>
                   )}
 
-                  {doc.processingStatus === 'PROCESSED' && (
-                    <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-2">
-                      <button
-                        onClick={() => handleGenerate(doc._id, 'summary')}
-                        disabled={generating === `${doc._id}-summary`}
-                        className="px-3 py-1.5 text-xs font-medium bg-slate-50 hover:bg-brand-50 hover:text-brand-700 text-slate-700 border border-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-brand-500" />
-                        <span>{generating === `${doc._id}-summary` ? 'Generating...' : 'Summary'}</span>
-                      </button>
+                  {doc.processingStatus === 'PROCESSED' && (() => {
+                    const existingSummary = resources.find(
+                      (r) => r.resourceType === 'SUMMARY' && (r.documentId?._id === doc._id || r.documentId === doc._id)
+                    );
+                    const existingFlashcards = resources.find(
+                      (r) => r.resourceType === 'FLASHCARDS' && (r.documentId?._id === doc._id || r.documentId === doc._id)
+                    );
+                    const existingQuiz = quizzes.find(
+                      (q) => q.documentId?._id === doc._id || q.documentId === doc._id
+                    );
 
-                      <button
-                        onClick={() => handleGenerate(doc._id, 'flashcards')}
-                        disabled={generating === `${doc._id}-flashcards`}
-                        className="px-3 py-1.5 text-xs font-medium bg-slate-50 hover:bg-brand-50 hover:text-brand-700 text-slate-700 border border-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
-                      >
-                        <Brain className="w-3.5 h-3.5 text-indigo-500" />
-                        <span>{generating === `${doc._id}-flashcards` ? 'Generating...' : 'Flashcards'}</span>
-                      </button>
+                    return (
+                      <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-2">
+                        {existingSummary ? (
+                          <Link
+                            to={`/resources/${existingSummary._id}`}
+                            className="px-3 py-1.5 text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors flex items-center gap-1.5"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>View Summary</span>
+                          </Link>
+                        ) : (
+                          <button
+                            onClick={() => handleGenerate(doc._id, 'summary')}
+                            disabled={generating === `${doc._id}-summary`}
+                            className="px-3 py-1.5 text-xs font-medium bg-slate-50 hover:bg-brand-50 hover:text-brand-700 text-slate-700 border border-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-brand-500" />
+                            <span>{generating === `${doc._id}-summary` ? 'Generating...' : 'Summary'}</span>
+                          </button>
+                        )}
 
-                      <button
-                        onClick={() => handleGenerate(doc._id, 'quiz')}
-                        disabled={generating === `${doc._id}-quiz`}
-                        className="px-3 py-1.5 text-xs font-medium bg-slate-50 hover:bg-brand-50 hover:text-brand-700 text-slate-700 border border-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
-                      >
-                        <HelpCircle className="w-3.5 h-3.5 text-emerald-500" />
-                        <span>{generating === `${doc._id}-quiz` ? 'Generating...' : 'Create Quiz'}</span>
-                      </button>
-                    </div>
-                  )}
+                        {existingFlashcards ? (
+                          <Link
+                            to={`/resources/${existingFlashcards._id}`}
+                            className="px-3 py-1.5 text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors flex items-center gap-1.5"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
+                            <span>View Flashcards</span>
+                          </Link>
+                        ) : (
+                          <button
+                            onClick={() => handleGenerate(doc._id, 'flashcards')}
+                            disabled={generating === `${doc._id}-flashcards`}
+                            className="px-3 py-1.5 text-xs font-medium bg-slate-50 hover:bg-brand-50 hover:text-brand-700 text-slate-700 border border-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
+                          >
+                            <Brain className="w-3.5 h-3.5 text-indigo-500" />
+                            <span>{generating === `${doc._id}-flashcards` ? 'Generating...' : 'Flashcards'}</span>
+                          </button>
+                        )}
+
+                        {existingQuiz ? (
+                          <Link
+                            to={`/quiz/${existingQuiz._id}`}
+                            className="px-3 py-1.5 text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors flex items-center gap-1.5"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-purple-600" />
+                            <span>Take Quiz</span>
+                          </Link>
+                        ) : (
+                          <button
+                            onClick={() => handleGenerate(doc._id, 'quiz')}
+                            disabled={generating === `${doc._id}-quiz`}
+                            className="px-3 py-1.5 text-xs font-medium bg-slate-50 hover:bg-brand-50 hover:text-brand-700 text-slate-700 border border-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
+                          >
+                            <HelpCircle className="w-3.5 h-3.5 text-emerald-500" />
+                            <span>{generating === `${doc._id}-quiz` ? 'Generating...' : 'Create Quiz'}</span>
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               ))}
             </div>
@@ -239,7 +301,7 @@ export default function SubjectDetailPage() {
                 {quizzes.map((q) => (
                   <div
                     key={q._id}
-                    className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between"
+                    className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between gap-3"
                   >
                     <div>
                       <h4 className="font-semibold text-slate-900 text-sm">{q.title}</h4>
@@ -247,13 +309,22 @@ export default function SubjectDetailPage() {
                         {q.questions?.length || 4} questions &bull; Multi-choice assessment
                       </p>
                     </div>
-                    <Link
-                      to={`/quiz/${q._id}`}
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-medium shadow-sm flex items-center gap-1.5 transition-colors"
-                    >
-                      <span>Take Quiz</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to={`/quiz/${q._id}`}
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-medium shadow-sm flex items-center gap-1.5 transition-colors"
+                      >
+                        <span>Take Quiz</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteQuiz(q._id)}
+                        className="p-2 text-slate-300 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
+                        title="Delete quiz"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -276,7 +347,7 @@ export default function SubjectDetailPage() {
                 {resources.map((res) => (
                   <div
                     key={res._id}
-                    className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between"
+                    className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between gap-3"
                   >
                     <div>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 uppercase tracking-wider">
@@ -284,13 +355,22 @@ export default function SubjectDetailPage() {
                       </span>
                       <h4 className="font-semibold text-slate-900 text-sm mt-1">{res.title}</h4>
                     </div>
-                    <Link
-                      to={`/resources/${res._id}`}
-                      className="px-3.5 py-1.5 bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
-                    >
-                      <span>Open</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to={`/resources/${res._id}`}
+                        className="px-3.5 py-1.5 bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
+                      >
+                        <span>Open</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteResource(res._id)}
+                        className="p-2 text-slate-300 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
+                        title="Delete resource"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

@@ -4,11 +4,10 @@
   "private": true,
   "description": "StudyForge - AI-Powered Learning & Revision Workspace",
   "scripts": {
-    "server": "npm --prefix server run dev",
-    "client": "npm --prefix client run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "install:all": "npm --prefix server install && npm --prefix client install",
-    "test": "npm --prefix server test"
+    "backend": "npm --prefix backend run dev",
+    "frontend": "npm --prefix frontend run dev",
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "test": "npm --prefix backend test"
   },
   "keywords": ["mern", "studyforge", "ai-education", "spaced-repetition", "analytics"],
   "author": "",

@@ -20,6 +20,19 @@ export const generateQuiz = async (req, res, next) => {
       });
     }
 
+    // Check if quiz already exists for this document
+    const existingQuiz = await Quiz.findOne({
+      userId: req.user._id,
+      documentId: doc._id,
+    });
+    if (existingQuiz) {
+      return res.status(200).json({
+        success: true,
+        message: 'A practice quiz already exists for this document.',
+        data: existingQuiz,
+      });
+    }
+
     const quizData = await AIService.generateQuiz(doc.extractedText, 5);
     const topicTags = [...new Set(quizData.questions.map(q => q.topicTag))];
 
@@ -231,6 +244,22 @@ export const getAttempt = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Quiz attempt not found.' });
     }
     res.status(200).json({ success: true, data: attempt });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteQuiz = async (req, res, next) => {
+  try {
+    const quiz = await Quiz.findOneAndDelete({
+      _id: req.params.quizId,
+      userId: req.user._id,
+    });
+    if (!quiz) {
+      return res.status(404).json({ success: false, message: 'Quiz not found.' });
+    }
+    await QuizAttempt.deleteMany({ quizId: quiz._id });
+    res.status(200).json({ success: true, message: 'Quiz deleted successfully.' });
   } catch (err) {
     next(err);
   }
